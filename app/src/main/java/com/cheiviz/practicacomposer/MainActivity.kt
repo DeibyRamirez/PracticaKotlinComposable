@@ -10,15 +10,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cheiviz.practicacomposer.screens.HomeScreen
 import com.cheiviz.practicacomposer.screens.LoginScreen
-import com.cheiviz.practicacomposer.screens.components.TaskRow
+import com.cheiviz.practicacomposer.screens.components.TaskDataStore
 
 
 class MainActivity : ComponentActivity() {
+
+    private val taskDataStore by lazy { TaskDataStore(this) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                AppNavHost()
+                AppNavHost( taskDataStore )
             }
         }
 
@@ -32,7 +35,7 @@ class MainActivity : ComponentActivity() {
 // 3. Crear los composables que se van a navegar (HomeScreen, LoginScreen)
 // 4. Crear las acciones de navegacion en los composables (onLogin, onLogout)
 @Composable
-fun AppNavHost() {
+fun AppNavHost(taskDataStore: TaskDataStore) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login"){
@@ -45,12 +48,14 @@ fun AppNavHost() {
             val username = backStackEntry.arguments?.getString("username") ?: ""
             HomeScreen(
                 userName = username,
+                taskDataStore = taskDataStore,
                 onLogout = {
                     navController.popBackStack(
                         route = "login", inclusive = false
                     )
                     navController.navigate("login")
                 }
+
             )
         }
 
